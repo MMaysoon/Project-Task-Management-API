@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ProjectManagement.API.Middlewares;
 using ProjectManagement.Application.Helpers;
 using ProjectManagement.Domain.Entities;
 using ProjectManagement.Infrastructure.Data;
-using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
 using System.Text;
 
 namespace ProjectManagement.API
@@ -83,6 +85,27 @@ namespace ProjectManagement.API
             #endregion
 
 
+            #region Configure Serilog 
+            builder.Logging.ClearProviders();
+
+           
+            var logger = new LoggerConfiguration()
+                            .ReadFrom.Configuration(builder.Configuration)
+                            .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Error)
+                            .MinimumLevel.Override("Serilog", LogEventLevel.Error)
+                            .Enrich.FromLogContext()
+                            //.Enrich.WithClientIp()
+                            //.Enrich.WithMachineName()
+                            .CreateLogger();
+
+
+            Log.Logger = logger;
+            builder.Logging.AddSerilog(logger);
+            builder.Host.UseSerilog();
+            #endregion
+
+
 
             builder.Services.AddControllers();
 
@@ -131,16 +154,19 @@ namespace ProjectManagement.API
 
             var app = builder.Build();
 
+            app.ConfigureExceptionHandler(logger);
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            app.UseSerilogRequestLogging();
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.MapControllers();
