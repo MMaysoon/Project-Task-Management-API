@@ -14,5 +14,7 @@ namespace ProjectManagement.Application.Common
         public T? Data { get; set; }
 
         public int StatusCode { get; set; }
+
+       
     }
 }

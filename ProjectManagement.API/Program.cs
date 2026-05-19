@@ -5,8 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProjectManagement.API.Middlewares;
 using ProjectManagement.Application.Helpers;
+using ProjectManagement.Application.IServices;
+using ProjectManagement.Application.Services;
 using ProjectManagement.Domain.Entities;
 using ProjectManagement.Infrastructure.Data;
+using ProjectManagement.Infrastructure.Data.Seed;
 using Serilog;
 using Serilog.Events;
 using System.Text;
@@ -15,7 +18,7 @@ namespace ProjectManagement.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -106,6 +109,12 @@ namespace ProjectManagement.API
             #endregion
 
 
+            #region Services Injection
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            #endregion
+
+            
 
             builder.Services.AddControllers();
 
@@ -153,6 +162,16 @@ namespace ProjectManagement.API
             #endregion
 
             var app = builder.Build();
+
+            #region Seed Roles
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                await RoleSeeder.Seed(roleManager);
+            }
+
+            #endregion
 
             app.ConfigureExceptionHandler(logger);
 

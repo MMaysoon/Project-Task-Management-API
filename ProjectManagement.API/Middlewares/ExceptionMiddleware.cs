@@ -22,15 +22,18 @@ namespace ProjectManagement.API.Middlewares
                     var contextFeature = context.Features.Get<IExceptionHandlerPathFeature>();
                     if (contextFeature != null)
                     {
+                        //1.logs 
                         var ex = contextFeature.Error;
                         logger.Error(ex, "Unhandled exception occurred");
+
+                        //2. response to client
                         var response = new ApiResponse<string>
                         {
                             Success = false,
                             ErrorMessages = new List<string>
                             {
-                                 "Something went wrong"
-                            },
+                                 ex.Message
+                            }, 
                             StatusCode = context.Response.StatusCode
                         };
                         await context.Response.WriteAsync(JsonSerializer.Serialize(response));
