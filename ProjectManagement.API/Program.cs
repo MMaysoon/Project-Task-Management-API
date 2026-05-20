@@ -120,6 +120,7 @@ namespace ProjectManagement.API
             builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
+            builder.Services.AddScoped<ITaskService, TaskItemService>();
             #endregion
 
             

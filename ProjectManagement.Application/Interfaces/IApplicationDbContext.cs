@@ -11,6 +11,7 @@ namespace ProjectManagement.Application.Interfaces
     public interface IApplicationDbContext
     {
         DbSet<Project> Projects { get; set; }
+        DbSet<TaskItem> TaskItems { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellation=default);
     }
