@@ -6,6 +6,7 @@ using ProjectManagement.Application.Common;
 using ProjectManagement.Application.Dtos.Pagination;
 using ProjectManagement.Application.Dtos.ProjectDto;
 using ProjectManagement.Application.Features.Projects.Commands.CreateProject;
+using ProjectManagement.Application.Features.Projects.Queries.GetAllProjects;
 using ProjectManagement.Application.IServices;
 using System.Security.Claims;
 
@@ -68,14 +69,40 @@ namespace ProjectManagement.API.Controllers
         }
         #endregion
 
+
+        #region GetAll endpoint using Service
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll(
+        //    int pageNumber = 1,
+        //    int pageSize = 10,
+        //    string? searchTerm = null)
+        //{
+        //    var result = await _projectService
+        //        .GetAllAsync(pageNumber, pageSize, GetUserId(), searchTerm);
+
+        //    return Ok(new ApiResponse<PagedList<ProjectResponseDTO>>
+        //    {
+        //        Success = true,
+        //        Data = result,
+        //        StatusCode = 200
+        //    });
+        //}
+        #endregion
+
+
+        #region GetAll endpoint -> using CQRS & MediatR
         [HttpGet]
-        public async Task<IActionResult> GetAll(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? searchTerm = null)
+        public async Task<IActionResult> GetAll(int pageNumber = 1,int pageSize = 10,string? searchTerm = null)
         {
-            var result = await _projectService
-                .GetAllAsync(pageNumber, pageSize, GetUserId(), searchTerm);
+            var query = new GetAllProjectsQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                SearchTerm = searchTerm,
+                UserId = GetUserId()
+            };
+
+            var result = await _mediator.Send(query);
 
             return Ok(new ApiResponse<PagedList<ProjectResponseDTO>>
             {
@@ -84,6 +111,7 @@ namespace ProjectManagement.API.Controllers
                 StatusCode = 200
             });
         }
+        #endregion
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
