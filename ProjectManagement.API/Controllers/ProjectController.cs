@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectManagement.Application.Common;
 using ProjectManagement.Application.Dtos.Pagination;
 using ProjectManagement.Application.Dtos.ProjectDto;
+using ProjectManagement.Application.Features.Projects.Commands.CreateProject;
 using ProjectManagement.Application.IServices;
 using System.Security.Claims;
 
@@ -15,10 +17,12 @@ namespace ProjectManagement.API.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _projectService;
+        private readonly IMediator _mediator;
 
-        public ProjectController(IProjectService projectService)
+        public ProjectController(IProjectService projectService, IMediator mediator)
         {
             _projectService = projectService;
+            _mediator = mediator;
         }
 
         private string GetUserId()
@@ -26,12 +30,34 @@ namespace ProjectManagement.API.Controllers
             return User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             ?? throw new Exception("User not authenticated");
         }
+        #region Create using Service 
+        //[HttpPost]
+        //public async Task<IActionResult> Create(CreateProjectDTO dto)
+        //{
+        //    var result = await _projectService
+        //        .CreateAsync(dto, GetUserId());
 
+        //    return Ok(new ApiResponse<ProjectResponseDTO>
+        //    {
+        //        Success = true,
+        //        Data = result,
+        //        StatusCode = 200
+        //    });
+        //}
+        #endregion
+
+        #region Create using CQRS & Mediatr
         [HttpPost]
         public async Task<IActionResult> Create(CreateProjectDTO dto)
         {
-            var result = await _projectService
-                .CreateAsync(dto, GetUserId());
+            var command = new CreateProjectCommand
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+                UserId = GetUserId()
+            };
+
+            var result = await _mediator.Send(command);
 
             return Ok(new ApiResponse<ProjectResponseDTO>
             {
@@ -40,6 +66,7 @@ namespace ProjectManagement.API.Controllers
                 StatusCode = 200
             });
         }
+        #endregion
 
         [HttpGet]
         public async Task<IActionResult> GetAll(

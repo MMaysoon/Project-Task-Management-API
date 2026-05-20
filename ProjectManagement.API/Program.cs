@@ -15,6 +15,8 @@ using ProjectManagement.Infrastructure.Data.Seed;
 using Serilog;
 using Serilog.Events;
 using System.Text;
+using MediatR;
+using ProjectManagement.Application;
 
 namespace ProjectManagement.API
 {
@@ -124,6 +126,8 @@ namespace ProjectManagement.API
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             #endregion
 
+            
+
 
             #region Services Injection
             builder.Services.AddScoped<IJwtService, JwtService>();
@@ -133,7 +137,11 @@ namespace ProjectManagement.API
             builder.Services.AddScoped<ITaskService, TaskItemService>();
             #endregion
 
-            
+            #region MediatR
+            builder.Services.AddMediatR(typeof(ApplicationAssemblyReference).Assembly);
+            #endregion
+
+
 
             builder.Services.AddControllers();
 
