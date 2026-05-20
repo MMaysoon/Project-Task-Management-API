@@ -87,5 +87,20 @@ namespace ProjectManagement.API.Controllers
                 StatusCode = 200
             });
         }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await _taskService.GetByIdAsync(id, GetUserId());
+
+            return Ok(new ApiResponse<TaskResponseDTO>
+            {
+                Success = true,
+                Data = result,
+                StatusCode = 200
+            });
+        }
     }
+
 }
