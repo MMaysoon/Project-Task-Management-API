@@ -41,6 +41,25 @@ namespace ProjectManagement.Application.Services
             
         }
 
+        public async Task<PagedList<TaskResponseDTO>> GetByProjectIdAsync(int projectId, string userId, int pageNumber, int pageSize)
+        {
+            var tasks = await _context.TaskItems
+                .Include(t => t.Project)
+                .Where(t => t.ProjectId == projectId && t.Project.UserId == userId)
+                .Select(t => new TaskResponseDTO
+                {
+                    Id = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    DueDate = t.DueDate,
+                    Status = t.Status,
+                    Priority = t.Priority,
+                    ProjectId = t.ProjectId
+                }).ToPagedListAsync(pageNumber, pageSize); ;
+
+            return tasks;
+        }
+
         public async Task<bool> DeleteAsync(int id, string userId)
         {
             var task = await _context.TaskItems 

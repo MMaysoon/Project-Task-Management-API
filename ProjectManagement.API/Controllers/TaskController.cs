@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectManagement.Application.Common;
 using ProjectManagement.Application.Dtos.Pagination;
@@ -11,6 +12,7 @@ namespace ProjectManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "User")]
     public class TaskController : ControllerBase
     {
         private readonly ITaskService _taskService;
@@ -35,7 +37,18 @@ namespace ProjectManagement.API.Controllers
                 StatusCode = 200
             });
         }
+        [HttpGet("project/{projectId}")]
+        public async Task<IActionResult> GetByProjectId(int projectId, int pageNumber = 1, int pageSize = 10)
+        {
+            var result = await _taskService.GetByProjectIdAsync(projectId, GetUserId(), pageNumber, pageSize);
 
+            return Ok(new ApiResponse<PagedList<TaskResponseDTO>>
+            {
+                Success = true,
+                Data = result,
+                StatusCode = 200
+            });
+        }
         [HttpPost]
         public async Task<IActionResult> Create(CreateTaskDTO dto)
         {

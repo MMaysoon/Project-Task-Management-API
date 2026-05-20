@@ -11,11 +11,15 @@ namespace ProjectManagement.Infrastructure.Data.Seed
     {
         public static async Task Seed(RoleManager<IdentityRole> roleManager)
         {
-            if (!await roleManager.RoleExistsAsync("Admin"))
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            string[] roles = { "Admin", "User" };
 
-            if (!await roleManager.RoleExistsAsync("User"))
-                await roleManager.CreateAsync(new IdentityRole("User"));
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
         }
     }
 }

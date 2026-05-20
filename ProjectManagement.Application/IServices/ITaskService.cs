@@ -12,6 +12,7 @@ namespace ProjectManagement.Application.IServices
     public interface ITaskService
     {
         Task<PagedList<TaskResponseDTO>> GetAllAsync(int pageNumber, int pageSize, string userId, string? searchTerm, TaskItemStatus? status, TaskPriority? priority);
+        Task<PagedList<TaskResponseDTO>> GetByProjectIdAsync(int projectId, string userId, int pageNumber, int pageSize);
 
         Task<TaskResponseDTO> GetByIdAsync(int id, string userId);
 
