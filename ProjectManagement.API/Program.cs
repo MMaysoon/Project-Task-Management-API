@@ -90,6 +90,16 @@ namespace ProjectManagement.API
             #endregion
 
 
+            #region CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                });
+            });
+            #endregion
+
             #region Configure Serilog 
             builder.Logging.ClearProviders();
 
@@ -193,7 +203,7 @@ namespace ProjectManagement.API
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
-
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
 
