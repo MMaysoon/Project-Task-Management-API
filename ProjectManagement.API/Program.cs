@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProjectManagement.API.Middlewares;
 using ProjectManagement.Application.Helpers;
+using ProjectManagement.Application.Interfaces;
 using ProjectManagement.Application.IServices;
 using ProjectManagement.Application.Services;
 using ProjectManagement.Domain.Entities;
@@ -108,10 +110,16 @@ namespace ProjectManagement.API
             builder.Host.UseSerilog();
             #endregion
 
+            #region AutoMapper
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            #endregion
+
 
             #region Services Injection
             builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IProjectService, ProjectService>();
             #endregion
 
             

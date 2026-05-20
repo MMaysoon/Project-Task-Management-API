@@ -24,6 +24,6 @@ namespace ProjectManagement.Domain.Entities
         public int ProjectId { get; set; }
 
         // many tasks -> one project
-        public Project Project { get; set; } = null;
+        public Project Project { get; set; } 
     }
 }

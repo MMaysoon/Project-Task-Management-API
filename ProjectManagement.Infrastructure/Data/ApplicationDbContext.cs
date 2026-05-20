@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ProjectManagement.Application.Interfaces;
 using ProjectManagement.Domain.Entities;
 using ProjectManagement.Infrastructure.Configurations;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManagement.Infrastructure.Data
 {
-    public class ApplicationDbContext:IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
